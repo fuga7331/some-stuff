@@ -1,0 +1,52 @@
+﻿<!DOCTYPE HTML>
+<html>
+	<meta charset="utf8">
+	<head>
+		<script src="helper_functions_3.js"></script>
+		<script src="work_hours.js"></script>
+		<style>
+			@import url("styles.css");
+		</style>
+	</head>
+	<body onload="app.print_workhours_table(tb1,tb2);">
+		<button onclick="app.save_data();">save</button>
+		<button onclick="app.load_data(tb1,tb2);">load</button>
+		<form class="no_print_display" 
+                      id="import_data" 
+                      onsubmit="app.set_work_month(JSON.parse(this['json_input']); app.print_workhours_table(tb1,tb2); return false;">
+			<textarea name="json_input"></textarea>
+			<input type="submit" value="import from json">
+                </form>
+		<section>
+			<textarea class="no_print_display" 
+			     id="exported_data" 
+			     onclick="this.innerHTML = JSON.stringify(app.get_work_month(), null,'    ');">click here to export to json</textarea>
+		</section>
+		<form id="frm1" onsubmit="app.recalc_workhours_table(tb1); app.print_workhours_table(tb1,tb2); return false;">
+			<table>
+				<caption><input type="text" value="work hours report"></caption>
+				<thead>
+					<tr>
+						<th>תאריך</th>
+						<th>start</th>
+						<th>end</th>
+						<th>total</th>
+					</tr>	
+				</thead>
+				<tbody id="tb1">
+				</tbody>
+			</table>
+			<input type="submit" value="calc" class="no_print_display">
+		</form>
+		<table>
+			<thead>
+			</thead>
+			<tbody id="tb2">
+			</tbody>
+		</table>
+	<!-- 
+
+	
+	-->
+	</body>
+</html>
