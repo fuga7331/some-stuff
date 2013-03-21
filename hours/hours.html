@@ -2,15 +2,29 @@
 <html>
 	<meta charset="utf8">
 	<head>
+		<script src="jquery-1.9.1.js"></script>
 		<script src="helper_functions_3.js"></script>
 		<script src="work_hours.js"></script>
 		<style>
 			@import url("styles.css");
 		</style>
+		<script>
+			function init_all(){
+				var tb1 = tb1 || $("#tb1")[0];
+				var tb2 = tb2 || $("#tb2")[0];
+				var select1 = select1 || $('#select1')[0];
+				$('#save').click(function (e) { app.save_data(); });
+				$('#load').click(function (e) { app.load_data(tb1,tb2); });
+				$('#exported_data').click(function (e) {
+					this.innerHTML = JSON.stringify(app.get_work_month(), null,'    ');
+				});
+				app.init(tb1,tb2,select1);
+			}
+		</script>
 	</head>
-	<body onload="app.print_workhours_table(tb1,tb2);">
-		<button onclick="app.save_data();">save</button>
-		<button onclick="app.load_data(tb1,tb2);">load</button>
+	<body onload="init_all();">
+		<button id="save">save</button>
+		<button id="load">load</button>
 		<form class="no_print_display" 
                       id="import_data" 
                       onsubmit="app.set_work_month(JSON.parse(this['json_input']); app.print_workhours_table(tb1,tb2); return false;">
@@ -19,8 +33,7 @@
                 </form>
 		<section>
 			<textarea class="no_print_display" 
-			     id="exported_data" 
-			     onclick="this.innerHTML = JSON.stringify(app.get_work_month(), null,'    ');">click here to export to json</textarea>
+			     id="exported_data">click here to export to json</textarea>
 		</section>
 		<form id="frm1" onsubmit="app.recalc_workhours_table(tb1); app.print_workhours_table(tb1,tb2); return false;">
 			<table>
@@ -44,6 +57,11 @@
 			<tbody id="tb2">
 			</tbody>
 		</table>
+		<select id="select1">
+			<!-- values here must be names of public methods in app -->
+			<option value="work_day_or_not">work_day/not</option>
+			<option value="">nothing</option>
+		</select>
 	<!-- 
 
 	

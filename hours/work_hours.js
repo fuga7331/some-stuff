@@ -18,8 +18,33 @@ var app = (function () {
 
     //increments 1 based weekday
     'use strict';
-    var work_month;
-    var hours_precision = 2;
+    var work_month,
+        hours_precision = 2,
+        public_variables = {
+            "" : function (e) {console.log(e);},
+            set_hours_precision: function(n){ hours_precision = n; },
+            set_work_month: set_work_month,
+            get_work_month: get_work_month,
+            print_workhours_table: print_workhours_table,
+            recalc_workhours_table: recalc_workhours_table,
+            save_data: save_data,
+            load_data: load_data,
+            work_day_or_not: work_day_or_not,
+            init: init
+    };
+    function init(tb1,tb2,select1){
+        var current_callback = public_variables[select1.value];
+	$(document).on("click", function(e){
+	    if (e.target.tagName === "TD" && e.target.parentElement.parentElement === tb1) { 
+                current_callback(e.target);
+	    }
+        });
+        $(select1).on("change", function (e) {
+            console.log(this.value);
+	    current_callback = public_variables[this.value];
+        });
+        print_workhours_table(tb1,tb2);
+    }
     function inc_weekday(week_day) {
         return week_day % 7 + 1;
     }
@@ -77,10 +102,15 @@ var app = (function () {
                     "<td>"  +
                         total_hours_this_day.toFixed(hours_precision)
                     + "</td>" +
-                    "<td class=\"no_print_display\" onclick=\"app.work_day_or_not(this)\">" +
-                        "workday/not"
-                    + "</td>" +
+	            
+		    row_click_td()
+                    +
                 "</tr>";
+    }
+    function row_click_td(){
+        return "<td class=\"row_click no_print_display\" >"+
+                        "..."
+               + "</td>"
     }
     function print_workhours_table(output_table_body_for_hours, output_table_body_for_summary) {
         var result = [{str: "", total_hours: 0, total_days: 0 }].concat(Object.keys(work_month)).reduce(function (result, d) {
@@ -98,10 +128,8 @@ var app = (function () {
                                 + "</td>" +
                                 "<td colspan=\"3\">" +
                                     work_month[d].reason.wrapInputValue("reason[]")
-                                + "</td>" +
-                                "<td class=\"no_print_display\" onclick=\"app.work_day_or_not(this)\">" +
-                                    "workday/not"
-                                + "</td>" +
+                                + "</td>" + 
+				row_click_td() +
                             "</tr>";
             } else {
                 //workday
@@ -195,9 +223,7 @@ var app = (function () {
                             "<td colspan=\"3\">" +
                                 "idk".wrapInputValue("reason[]")
                             + "</td>" +
-                            "<td class=\"no_print_display\" onclick=\"app.work_day_or_not(this)\">" +
-                                    "workday/not"
-                            + "</td>";
+                            row_click_td();
         } else {
             row.innerHTML = to_workday_row(d, 8, 0, 14, 0);
         }
@@ -211,14 +237,6 @@ var app = (function () {
         return work_month;
     }
     work_month = to_work_month(thisMonth() + 1, thisYear(), 6);
-    return {
-	set_hours_precision: function(n){ hours_precision = n; },
-        set_work_month: set_work_month,
-        get_work_month: get_work_month,
-        print_workhours_table: print_workhours_table,
-        recalc_workhours_table: recalc_workhours_table,
-        save_data: save_data,
-        load_data: load_data,
-        work_day_or_not: work_day_or_not
-    };
+    
+    return public_variables;
 }());

@@ -5,6 +5,9 @@ table{
 	direction: rtl;
 	border-collapse: collapse;
 }
+tr:hover{
+	background-color:lightgreen;
+}
 td, th{
 	padding-top: 1px;
 	padding-bottom: 1px;
