@@ -9,10 +9,16 @@
 			@import url("styles.css");
 		</style>
 		<script>
+			var tb1, tb2, select1;
+			function import_from_json(str){
+				app.set_work_month(JSON.parse(str));
+				app.print_workhours_table(tb1,tb2);
+				return;
+			}
 			function init_all(){
-				var tb1 = tb1 || $("#tb1")[0];
-				var tb2 = tb2 || $("#tb2")[0];
-				var select1 = select1 || $('#select1')[0];
+				tb1 = tb1 || $("#tb1")[0];
+				tb2 = tb2 || $("#tb2")[0];
+				select1 = select1 || $('#select1')[0];
 				$('#save').click(function (e) { app.save_data(); });
 				$('#load').click(function (e) { app.load_data(tb1,tb2); });
 				$('#exported_data').click(function (e) {
@@ -23,11 +29,11 @@
 		</script>
 	</head>
 	<body onload="init_all();">
-		<button id="save">save</button>
-		<button id="load">load</button>
+		<button id="save" class="no_print_display">save</button>
+		<button id="load" class="no_print_display">load</button>
 		<form class="no_print_display" 
                       id="import_data" 
-                      onsubmit="app.set_work_month(JSON.parse(this['json_input']); app.print_workhours_table(tb1,tb2); return false;">
+                      onsubmit="import_from_json(this.json_input.value); return false;">
 			<textarea name="json_input"></textarea>
 			<input type="submit" value="import from json">
                 </form>
@@ -57,7 +63,7 @@
 			<tbody id="tb2">
 			</tbody>
 		</table>
-		<select id="select1">
+		<select id="select1" class="no_print_display">
 			<!-- values here must be names of public methods in app -->
 			<option value="work_day_or_not">work_day/not</option>
 			<option value="">nothing</option>
