@@ -81,14 +81,33 @@ $.fn.toHtml = function () {
 	return this.map(function (index, element) {return $("<div>").append(element).html()});
 };
 
-
+function do_n_times(proc, n){
+	while(n>0){
+		proc();
+		n--;
+	}
+}
+function dup(obj, n){
+	return n <= 0 ?
+		[]    :
+		[obj].concat(dup(obj, n-1));	
+}
+//$("tr").map(function(i,v){return $(v).tr2obj({tdProc: function(td){return td && $("input",td).val()}})[0]})
 //TODO handle colspan
-function tr2obj (tr) {
+function tr2obj (tr,options) {
 	var keys = $("th",$(tr).parent().parent()).mapFn("html"),
-	    values = $(tr).children().mapFn("html"),
+	    values = $(tr).children(),
 	    result = {};
+	values = keys.map(function (i){
+		return values[i] && dup(values[i], values[i].colSpan);
+	});
 	keys.map(function (i){
-		result[keys[i]] = values[i];
+		if(!options)
+			result[keys[i]] = values[i] && $(values[i]).html();
+		else if(options.tdProc)
+			result[keys[i]] = options.tdProc(values[i]);
+		else
+			result[keys[i]] = values[i] && $(values[i]).html();
 	});
 	return result;
 }
@@ -107,6 +126,6 @@ $.fn.mapFn = function (methodName) {
 	});
 }
 
-$.fn.tr2obj = function () {
-	return this.map( rightShiftParams(tr2obj));
+$.fn.tr2obj = function (options) {
+	return this.map( function (i,v) { return tr2obj(v, options);});
 }
