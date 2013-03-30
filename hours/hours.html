@@ -29,18 +29,7 @@
 		</script>
 	</head>
 	<body onload="init_all();">
-		<button id="save" class="no_print_display">save</button>
-		<button id="load" class="no_print_display">load</button>
-		<form class="no_print_display" 
-                      id="import_data" 
-                      onsubmit="import_from_json(this.json_input.value); return false;">
-			<textarea name="json_input"></textarea>
-			<input type="submit" value="import from json">
-                </form>
-		<section>
-			<textarea class="no_print_display" 
-			     id="exported_data">click here to export to json</textarea>
-		</section>
+		
 		<form id="frm1" onsubmit="app.recalc_workhours_table(tb1); app.print_workhours_table(tb1,tb2); return false;">
 			<table>
 				<caption><input type="text" value="work hours report"></caption>
@@ -50,6 +39,7 @@
 						<th>start</th>
 						<th>end</th>
 						<th>total</th>
+						<th>comments</th>
 					</tr>	
 				</thead>
 				<tbody id="tb1">
@@ -63,14 +53,28 @@
 			<tbody id="tb2">
 			</tbody>
 		</table>
-		<select id="select1" class="no_print_display">
-			<!-- values here must be names of public methods in app -->
-			<option value="work_day_or_not">work_day/not</option>
-			<option value="">nothing</option>
-		</select>
-	<!-- 
-
-	
+	<!--
+	-->
+		<div id="options">
+			<form class="no_print_display" 
+		              id="import_data" 
+		              onsubmit="import_from_json(this.json_input.value); return false;">
+				<textarea name="json_input"></textarea>
+				<input type="submit" value="import from json">
+		        </form>
+			<section>
+				<textarea class="no_print_display" 
+				     id="exported_data">click here to export to json</textarea>
+			</section>
+		        <button id="save" class="no_print_display">save</button>
+			<button id="load" class="no_print_display">load</button>
+			<select id="select1" class="no_print_display">
+				<!-- values here must be names of public methods in app -->
+				<option value="work_day_or_not">work_day/not</option>
+				<option value="">nothing</option>
+			</select>
+		</div>
+	<!--
 	-->
 	</body>
 </html>

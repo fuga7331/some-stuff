@@ -32,22 +32,31 @@ input[type="text"][value~="day_off"]{
 	background-color: lightgrey;
 }
 #import_data{
-	position: absolute;
-	left: 0;
+	/*position: absolute;
+	left: 0;*/
 }
 #import_data textarea{
 	width: 300px;
 	height: 300px;
+	float: left;
+}
+#import_data input{
+	float: left;
+	clear: both;
 }
 #exported_data{
 	direction: ltr;
-	position: absolute;
+	/*position: absolute;
 	left: 0;
-	top: 340px;
-	width: 600px;
+	top: 340px;*/
+	width: 300px;
 	height: 300px;
 }
-
+#options{
+	position: absolute;
+	left: 0;
+	top:0;	
+}
 @media print 
 {
 	.no_print_display 

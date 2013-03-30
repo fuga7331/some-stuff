@@ -13,6 +13,7 @@ var app = (function () {
                 WorkDay{
                     start_time :: WorkHour
                     ,end_time :: WorkHour
+		    ,comment :: String
                 }
     */
 
@@ -67,7 +68,7 @@ var app = (function () {
         days_in_month = daysInMonth(month, year);
         //initialize optional arguments with default values
         standard_days_off = standard_days_off || {6: "friday", 7: "saturday"};
-        default_work_day = default_work_day || {"start": {"h": 8, "m": 0}, "end": {"h": 16, "m": 0}};
+        default_work_day = default_work_day || {"start": {"h": 8, "m": 0}, "end": {"h": 16, "m": 0}, "comment": ""};
 
         result = {};
         i = 1;
@@ -84,28 +85,21 @@ var app = (function () {
         }
         return result;
     }
-    function to_workday_row(d, start_hour, start_minute, end_hour, end_minute) {
+    
+    function to_workday_row(d, start_hour, start_minute, end_hour, end_minute, comment) {
         var total_minutes_this_day =    (end_hour * 60 + end_minute)  -
                                         (start_hour * 60 + start_minute),
             total_hours_this_day = total_minutes_this_day / 60.0;
 
-        return "<tr>" +
-                    "<td>" +
-                        d.wrapInputValue("work_calendar[]")
-                    + "</td>" +
-                    "<td>" +
-                        (start_hour + ":" + String(start_minute).padleft("0", 2)).wrapInputValue("strth[]")
-                    + "</td>" +
-                    "<td>"  +
-                        (end_hour   + ":" + String(end_minute).padleft("0", 2)).wrapInputValue("strtm[]")
-                    + "</td>" +
-                    "<td>"  +
-                        total_hours_this_day.toFixed(hours_precision)
-                    + "</td>" +
-	            
+        return make_tr([
+                    	d.wrapInputValue("work_calendar[]"),
+                    	(start_hour + ":" + String(start_minute).padleft("0", 2)).wrapInputValue("strth[]"),
+                    	(end_hour   + ":" + String(end_minute).padleft("0", 2)).wrapInputValue("strtm[]"),
+                    	total_hours_this_day.toFixed(hours_precision),
+                    	(comment || "").wrapInputValue("comment[]")
+		    ],
 		    row_click_td()
-                    +
-                "</tr>";
+                );
     }
     function row_click_td(){
         return "<td class=\"row_click no_print_display\" >"+
@@ -122,15 +116,17 @@ var app = (function () {
                 total_hours_this_day;
             if (work_month[d].hasOwnProperty("reason")) {
                 //days with a reason for absence
-                result.str +=     "<tr>" +
-                                "<td>" +
-                                    d.wrapInputValue("work_calendar[]")
-                                + "</td>" +
-                                "<td colspan=\"3\">" +
-                                    work_month[d].reason.wrapInputValue("reason[]")
-                                + "</td>" + 
-				row_click_td() +
-                            "</tr>";
+                result.str += make_tr([
+                                        d.wrapInputValue("work_calendar[]"),
+                                        {
+					    value: work_month[d].reason.wrapInputValue("reason[]"),
+					    attributes: {
+				   	  	    colspan: 3
+					    }
+				        }
+				    ],
+				    row_click_td() + row_click_td()
+				);
             } else {
                 //workday
                 start_hour             = work_month[d].start.h;
@@ -144,7 +140,7 @@ var app = (function () {
                 result.total_days += 1;
                 result.total_hours += total_hours_this_day;
 
-                result.str += to_workday_row(d, start_hour, start_minute, end_hour, end_minute);
+                result.str += to_workday_row(d, start_hour, start_minute, end_hour, end_minute, work_month[d].comment);
 
             }
             return result;
@@ -184,28 +180,29 @@ var app = (function () {
             };
     }
     function workday_row(row) {
-        return row.cells.length === 5;
+        return $(row).children().none( function (index, td) {return td.colSpan === 3;} );
     }
-    function getReasonFromTable(table_rows, row_index) {
-        return table_rows[row_index].cells[1].childNodes[0].value;
+    function getReasonFromTable(row) {
+        return row.cells[1].childNodes[0] ? row.cells[1].childNodes[0].value : "";
     }
     function recalc_workhours_table(table_body) {
-        var rows = table_body.rows;
-        rows.forEach = Array.prototype.forEach;
-        rows.forEach(function (r, i, rows) {
+        //var rows = table_body.rows;
+        $(table_body).children("tr").map(function (i, r) {
             //console.log(rows[i].cells[0].childNodes[0].value);
             var work_day = work_month[r.cells[0].childNodes[0].value];
             if (workday_row(r)) {
                 //MAYBE_LATER
+		work_day.comment = r.cells[4].childNodes[0].value;
                 work_day.start = parse_time_h_m(r.cells[1].childNodes[0].value);
                 work_day.end = parse_time_h_m(r.cells[2].childNodes[0].value);
                 delete work_day.reason;
                 //console.log(work_day);//work_day);
             } else {
                 //MAYBE_LATER after this becomes an input aswell :
-                work_day.reason = getReasonFromTable(rows, i);
+                work_day.reason = getReasonFromTable(this);
                 delete work_day.start;
                 delete work_day.end;
+		delete work_day.comment;
             }
         });
     }
@@ -215,15 +212,15 @@ var app = (function () {
     function work_day_or_not(td) {
         var row = td.parentElement,
             d = row.cells[0].childNodes[0].value;
+
         if (workday_row(row)) {
-            //convert non workday row to workday row
+            //convert workday row to non workday row
             row.innerHTML = "<td>" +
                                 d.wrapInputValue("work_calendar[]")
                             + "</td>" +
                             "<td colspan=\"3\">" +
                                 "idk".wrapInputValue("reason[]")
-                            + "</td>" +
-                            row_click_td();
+                            + "</td>" + row_click_td() + row_click_td();
         } else {
             row.innerHTML = to_workday_row(d, 8, 0, 14, 0);
         }
