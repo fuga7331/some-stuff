@@ -51,7 +51,7 @@ var app = (function () {
     }
     function to_work_month(one_based_month,
                            year,
-                           day_of_the_week_of_the_first_day_in_month,
+                           one_based_day_of_the_week_of_the_first_day_in_month,
                            standard_days_off,// optional, default = {6:"friday",7:"saturday"}
                            default_work_day// optional, default = {"start": {"h":8,"m":00},"end": {"h":16,"m":00}}
                            ) {
@@ -64,7 +64,7 @@ var app = (function () {
         //translating arguments
         month = one_based_month - 1;
         //var year = ;
-        week_day = day_of_the_week_of_the_first_day_in_month;
+        week_day = one_based_day_of_the_week_of_the_first_day_in_month;
         days_in_month = daysInMonth(month, year);
         //initialize optional arguments with default values
         standard_days_off = standard_days_off || {6: "friday", 7: "saturday"};
@@ -233,7 +233,7 @@ var app = (function () {
         // TODO verification that obj can actually be a work month, according to the definition at the top of the file
         return work_month;
     }
-    work_month = to_work_month(thisMonth() + 1, thisYear(), 6);
+    work_month = to_work_month(thisMonth() + 1, thisYear(), firstDayThisMonth() + 1);
     
     return public_variables;
 }());

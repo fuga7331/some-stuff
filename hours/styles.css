@@ -39,6 +39,7 @@ input[type="text"][value~="day_off"]{
 	width: 300px;
 	height: 300px;
 	float: left;
+	direction: ltr;
 }
 #import_data input{
 	float: left;
