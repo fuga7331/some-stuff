@@ -6,6 +6,7 @@
 		<script src="plugins.js"></script>		
 		<script src="extension_methods.js"></script>
 		<script src="helper_functions.js"></script>
+		<script src="helper_functions_1.js"></script>
 		<script src="work_hours.js"></script>
 		<style>
 			@import url("styles.css");
@@ -37,11 +38,11 @@
 				<caption><input type="text" value="work hours report"></caption>
 				<thead>
 					<tr>
-						<th>תאריך</th>
-						<th>start</th>
-						<th>end</th>
-						<th>total</th>
-						<th>comments</th>
+						<th onclick="sortBy('תאריך')">תאריך</th>
+						<th onclick="sortBy('start')">start</th>
+						<th onclick="sortBy('end')">end</th>
+						<th onclick="sortBy('total')">total</th>
+						<th onclick="sortBy('comments')">comments</th>
 					</tr>	
 				</thead>
 				<tbody id="tb1">
